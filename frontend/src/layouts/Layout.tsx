@@ -1,3 +1,4 @@
+import { Toaster } from "react-hot-toast";
 import { Outlet } from "react-router-dom";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
@@ -12,6 +13,24 @@ const Layout = () => {
         <Outlet />
       </div>
       <Footer />
+      <Toaster
+        toastOptions={{
+          // Define default options
+          className: "",
+          duration: 5000,
+          style: {
+            background: "#363636",
+            color: "#fff",
+          },
+          // Default options for specific types
+          success: {
+            duration: 4000,
+          },
+          error: {
+            duration: 4000,
+          },
+        }}
+      />
     </div>
   );
 };

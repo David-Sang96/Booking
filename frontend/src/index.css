@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+  .labelStyle {
+    @apply flex-1 font-bold text-gray-700;
+  }
+}
+
+/* body {
+  background-color: #fffaef;
+} */

@@ -1,25 +1,27 @@
-import cors from "cors";
-import "dotenv/config";
-import express, { Express } from "express";
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import 'dotenv/config';
+import express, { Express } from 'express';
+import morgan from 'morgan';
 
-import morgan from "morgan";
-import { connectDB } from "./config/db";
-import { ENV_VARS } from "./config/envVars";
-import authRoutes from "./routes/auth.router";
-import userRoutes from "./routes/user.router";
+import { connectDB } from './config/db';
+import { ENV_VARS } from './config/envVars';
+import authRoutes from './routes/auth.router';
+import userRoutes from './routes/user.router';
 
 const app: Express = express();
 
-if (ENV_VARS.NODE_ENV === "development") {
-  app.use(morgan("dev"));
+if (ENV_VARS.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
 }
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cookieParser());
+app.use(cors({ origin: ENV_VARS.FRONTEND_URL, credentials: true }));
 
-app.use("/api/v1/users", userRoutes);
-app.use("/api/v1/auth", authRoutes);
+app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/auth', authRoutes);
 
 app.listen(ENV_VARS.PORT, async () => {
   await connectDB();
