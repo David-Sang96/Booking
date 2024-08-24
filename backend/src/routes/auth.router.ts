@@ -24,7 +24,7 @@ const logInvalidation = [
 ];
 
 router.post('/login', logInvalidation, logIn);
-router.post('/log-out', logInvalidation, logOut);
+router.post('/log-out', logOut);
 
 router.get('/validate-token', verifyToken, validateToken);
 

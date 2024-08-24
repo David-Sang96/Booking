@@ -1,9 +1,12 @@
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { useMutation } from "react-query";
+import { FaEye } from "react-icons/fa";
+import { FaEyeSlash } from "react-icons/fa6";
+import { useMutation, useQueryClient } from "react-query";
 import { Link, useNavigate } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
 
+import { useState } from "react";
 import * as apiClient from "../api-client";
 
 export type RegisterFormData = {
@@ -16,6 +19,8 @@ export type RegisterFormData = {
 
 const Register = () => {
   // const { showToast } = useAppContext();
+  const [passwordShown, setPasswordShown] = useState(false);
+  const [confirmPasswordShown, setConfirmPasswordShown] = useState(false);
   const {
     register,
     watch,
@@ -23,10 +28,22 @@ const Register = () => {
     formState: { errors },
   } = useForm<RegisterFormData>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const togglePasswordVisibility = () => {
+    if (watch("password").length === 0) return;
+    setPasswordShown((prev) => !prev);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    if (watch("confirmPassword").length === 0) return;
+    setConfirmPasswordShown((prev) => !prev);
+  };
 
   const mutation = useMutation(apiClient.register, {
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       // showToast({ message: data.message, type: "SUCCESS" });
+      await queryClient.invalidateQueries("validateToken");
       toast.success(data.message);
       navigate("/");
     },
@@ -36,7 +53,7 @@ const Register = () => {
     },
   });
 
-  const onSubmit = handleSubmit((data) => {
+  const onSubmit = handleSubmit((data: RegisterFormData) => {
     mutation.mutate(data);
   });
 
@@ -93,41 +110,70 @@ const Register = () => {
       </label>
       <label className="labelStyle">
         <span className="inline-block pb-2"> Password</span>
-        <input
-          type="password"
-          autoComplete="new-password"
-          className={twMerge(InputStyles, errors.password && "border-red-300")}
-          {...register("password", {
-            required: "Password is required",
-            minLength: {
-              value: 6,
-              message: "Password must be at least 6 characters",
-            },
-          })}
-        />
+        <div className="relative">
+          <input
+            type={passwordShown ? "text" : "password"}
+            autoComplete="new-password"
+            className={twMerge(
+              InputStyles,
+              errors.password && "border-red-300",
+            )}
+            {...register("password", {
+              required: "Password is required",
+              minLength: {
+                value: 6,
+                message: "Password must be at least 6 characters",
+              },
+            })}
+          />
+          {passwordShown && watch("password").length !== 0 ? (
+            <FaEye
+              className="absolute right-4 top-3 size-6 cursor-pointer text-blue-800 max-sm:size-4"
+              onClick={togglePasswordVisibility}
+            />
+          ) : (
+            <FaEyeSlash
+              className="absolute right-4 top-3 size-6 cursor-pointer text-blue-800 max-md:size-5"
+              onClick={togglePasswordVisibility}
+            />
+          )}
+        </div>
         {errors.password && (
           <span className="text-red-500">{errors.password.message}</span>
         )}
       </label>
       <label className="labelStyle">
         <span className="inline-block pb-2"> Confirm Password</span>
-        <input
-          type="password"
-          autoComplete="new-password"
-          className={twMerge(
-            InputStyles,
-            errors.confirmPassword && "border-red-300",
+        <div className="relative">
+          <input
+            type={confirmPasswordShown ? "text" : "password"}
+            autoComplete="new-password"
+            className={twMerge(
+              InputStyles,
+              errors.confirmPassword && "border-red-300",
+            )}
+            {...register("confirmPassword", {
+              validate: (value) => {
+                if (!value) {
+                  return "Confirm Password is required";
+                } else if (watch("password") !== value) {
+                  return "Your passwords do not match";
+                }
+              },
+            })}
+          />
+          {confirmPasswordShown && watch("confirmPassword").length !== 0 ? (
+            <FaEye
+              className="absolute right-4 top-3 size-6 cursor-pointer text-blue-800 max-sm:size-4"
+              onClick={toggleConfirmPasswordVisibility}
+            />
+          ) : (
+            <FaEyeSlash
+              className="absolute right-4 top-3 size-6 cursor-pointer text-blue-800 max-md:size-5"
+              onClick={toggleConfirmPasswordVisibility}
+            />
           )}
-          {...register("confirmPassword", {
-            validate: (value) => {
-              if (!value) {
-                return "Confirm Password is required";
-              } else if (watch("password") !== value) {
-                return "Your passwords do not match";
-              }
-            },
-          })}
-        />
+        </div>
         {errors.confirmPassword && (
           <span className="text-red-500">{errors.confirmPassword.message}</span>
         )}
