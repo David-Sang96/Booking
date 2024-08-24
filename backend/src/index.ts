@@ -18,10 +18,15 @@ if (ENV_VARS.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
+const allowedOrigins =
+  ENV_VARS.NODE_ENV === 'production'
+    ? ['https://booking-app-glea.onrender.com']
+    : [ENV_VARS.FRONTEND_URL as string];
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(cors({ origin: '*', credentials: true }));
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/auth', authRoutes);
