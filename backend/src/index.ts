@@ -1,8 +1,9 @@
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import 'dotenv/config';
-import express, { Express } from 'express';
+import express, { Express, Request, Response } from 'express';
 import morgan from 'morgan';
+import path from 'path';
 
 import { connectDB } from './config/db';
 import { ENV_VARS } from './config/envVars';
@@ -10,6 +11,8 @@ import authRoutes from './routes/auth.router';
 import userRoutes from './routes/user.router';
 
 const app: Express = express();
+
+const PORT = ENV_VARS.PORT || 3100;
 
 if (ENV_VARS.NODE_ENV === 'development') {
   app.use(morgan('dev'));
@@ -23,7 +26,17 @@ app.use(cors({ origin: ENV_VARS.FRONTEND_URL, credentials: true }));
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/auth', authRoutes);
 
-app.listen(ENV_VARS.PORT, async () => {
+if (ENV_VARS.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../../frontend/dist')));
+
+  app.get('*', (req: Request, res: Response) => {
+    res.sendFile(
+      path.resolve(__dirname, '../../frontend', 'dist', 'index.html')
+    );
+  });
+}
+
+app.listen(PORT, async () => {
   await connectDB();
-  console.log(`server running on port : ${ENV_VARS.PORT}`);
+  console.log(`server running on port : ${PORT}`);
 });
