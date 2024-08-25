@@ -4,6 +4,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import { ENV_VARS } from '../config/envVars';
 
 // extend express request type
+// extend the Express.Request interface globally to include a userId property.
 declare global {
   namespace Express {
     interface Request {

@@ -4,10 +4,22 @@
 
 @layer utilities {
   .labelStyle {
-    @apply flex-1 font-bold text-gray-700;
+    @apply flex-1 font-medium text-gray-700;
   }
 }
 
-/* body {
-  background-color: #fffaef;
-} */
+body {
+  background-color: #f2f2f2;
+}
+
+input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  width: 6px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}

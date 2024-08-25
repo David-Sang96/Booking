@@ -7,7 +7,9 @@ import path from 'path';
 
 import { connectDB } from './config/db';
 import { ENV_VARS } from './config/envVars';
+import verifyToken from './middleware/auth';
 import authRoutes from './routes/auth.router';
+import myHotelsRoutes from './routes/my-hotels.router';
 import userRoutes from './routes/user.router';
 
 const app: Express = express();
@@ -30,6 +32,9 @@ app.use(cors({ origin: allowedOrigins, credentials: true }));
 
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/auth', authRoutes);
+
+app.use(verifyToken);
+app.use('/api/v1/my-hotels', myHotelsRoutes);
 
 if (ENV_VARS.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../../frontend/dist')));

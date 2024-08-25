@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa6";
+import { PiSpinnerBold } from "react-icons/pi";
 import { useMutation, useQueryClient } from "react-query";
 import { Link, useNavigate } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
@@ -78,9 +79,12 @@ const Register = () => {
             {...register("firstName", { required: "First Name is required" })}
           />
           {errors.firstName && (
-            <span className="text-red-500">{errors.firstName.message}</span>
+            <span className="text-sm font-bold text-red-500">
+              {errors.firstName.message}
+            </span>
           )}
         </label>
+
         <label className="labelStyle">
           <span className="inline-block pb-2"> Last Name</span>
           <input
@@ -105,9 +109,12 @@ const Register = () => {
           {...register("email", { required: "E-mail is required" })}
         />
         {errors.email && (
-          <span className="text-red-500">{errors.email.message}</span>
+          <span className="text-sm font-bold text-red-500">
+            {errors.email.message}
+          </span>
         )}
       </label>
+
       <label className="labelStyle">
         <span className="inline-block pb-2"> Password</span>
         <div className="relative">
@@ -139,9 +146,12 @@ const Register = () => {
           )}
         </div>
         {errors.password && (
-          <span className="text-red-500">{errors.password.message}</span>
+          <span className="text-sm font-bold text-red-500">
+            {errors.password.message}
+          </span>
         )}
       </label>
+
       <label className="labelStyle">
         <span className="inline-block pb-2"> Confirm Password</span>
         <div className="relative">
@@ -175,9 +185,12 @@ const Register = () => {
           )}
         </div>
         {errors.confirmPassword && (
-          <span className="text-red-500">{errors.confirmPassword.message}</span>
+          <span className="text-sm font-bold text-red-500">
+            {errors.confirmPassword.message}
+          </span>
         )}
       </label>
+
       <div className="flex items-center justify-between pt-5 max-sm:flex-col max-sm:items-end max-sm:gap-5">
         <div>
           Already registered?{" "}
@@ -190,9 +203,13 @@ const Register = () => {
         </div>
         <button
           type="submit"
-          className="rounded border border-blue-800 bg-slate-50 px-3 py-2 text-sm duration-300 hover:bg-blue-800 hover:text-white md:text-base"
+          disabled={mutation.isLoading}
+          className={`flex items-center gap-1 rounded border border-blue-800 bg-slate-50 px-3 py-2 text-sm duration-300 hover:bg-blue-800 hover:text-white md:text-base ${mutation.isLoading && "cursor-not-allowed"}`}
         >
-          Create Account
+          {mutation.isLoading && (
+            <PiSpinnerBold className="size-6 animate-spin" />
+          )}
+          <p>Create Account</p>
         </button>
       </div>
     </form>

@@ -5,6 +5,7 @@ import {
 } from "react-router-dom";
 import { useAppContext } from "../contexts/AppContext";
 import Layout from "../layouts/Layout";
+import AddHotel from "../pages/AddHotel";
 import Home from "../pages/Home";
 import Register from "../pages/Register";
 import Search from "../pages/Search";
@@ -22,6 +23,15 @@ const Routes = () => {
           index: true,
           element: isLoggedIn ? <Home /> : <Navigate to={"/sign-in"} replace />,
         },
+
+        {
+          path: "/register",
+          element: !isLoggedIn ? <Register /> : <Navigate to={"/"} replace />,
+        },
+        {
+          path: "/sign-in",
+          element: !isLoggedIn ? <SignIn /> : <Navigate to={"/"} replace />,
+        },
         {
           path: "/search",
           element: isLoggedIn ? (
@@ -31,12 +41,12 @@ const Routes = () => {
           ),
         },
         {
-          path: "/register",
-          element: !isLoggedIn ? <Register /> : <Navigate to={"/"} replace />,
-        },
-        {
-          path: "/sign-in",
-          element: !isLoggedIn ? <SignIn /> : <Navigate to={"/"} replace />,
+          path: "/add-hotel",
+          element: isLoggedIn ? (
+            <AddHotel />
+          ) : (
+            <Navigate to={"/sign-in"} replace />
+          ),
         },
       ],
     },

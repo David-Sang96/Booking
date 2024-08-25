@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from "react-query";
 import { Link, useNavigate } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
 
+import { PiSpinnerBold } from "react-icons/pi";
 import * as apiClient from "../api-client";
 
 export type SignInFormData = {
@@ -20,7 +21,7 @@ const SignIn = () => {
     register,
     handleSubmit,
     watch,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<SignInFormData>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -55,7 +56,7 @@ const SignIn = () => {
     >
       <h2 className="text-3xl font-bold">Sign In</h2>
       <label>
-        <span className="inline-block pb-2">E-mail</span>
+        <span className="inline-block pb-2 font-medium">E-mail</span>
         <input
           type="email"
           autoComplete="username"
@@ -63,11 +64,14 @@ const SignIn = () => {
           {...register("email", { required: "E-mail is required" })}
         />
         {errors.email && (
-          <span className="text-red-500">{errors.email.message}</span>
+          <span className="text-sm font-bold text-red-500">
+            {errors.email.message}
+          </span>
         )}
       </label>
+
       <label>
-        <span className="inline-block pb-2">Password</span>
+        <span className="inline-block pb-2 font-medium">Password</span>
         <div className="relative">
           <input
             type={passwordShown ? "text" : "password"}
@@ -94,9 +98,12 @@ const SignIn = () => {
           )}
         </div>
         {errors.password && (
-          <span className="text-red-500">{errors.password.message}</span>
+          <span className="text-sm font-bold text-red-500">
+            {errors.password.message}
+          </span>
         )}
       </label>
+
       <div className="flex items-center justify-between pt-5 max-sm:flex-col max-sm:items-end max-sm:gap-5">
         <div>
           Not Registered?{" "}
@@ -108,11 +115,14 @@ const SignIn = () => {
           </Link>
         </div>
         <button
-          disabled={isSubmitting}
+          disabled={mutation.isLoading}
           type="submit"
-          className={`rounded border border-blue-800 bg-slate-50 px-3 py-2 text-sm duration-300 hover:bg-blue-800 hover:text-white md:text-base ${isSubmitting && "cursor-not-allowed"}`}
+          className={`flex items-center gap-1 rounded border border-blue-800 bg-slate-50 px-3 py-2 text-sm duration-300 hover:bg-blue-800 hover:text-white md:text-base ${mutation.isLoading && "cursor-not-allowed"}`}
         >
-          Login
+          {mutation.isLoading && (
+            <PiSpinnerBold className="size-6 animate-spin" />
+          )}
+          <p> Login</p>
         </button>
       </div>
     </form>
