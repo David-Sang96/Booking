@@ -33,8 +33,7 @@ app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/auth', authRoutes);
 
-app.use(verifyToken);
-app.use('/api/v1/my-hotels', myHotelsRoutes);
+app.use('/api/v1/my-hotels', verifyToken, myHotelsRoutes);
 
 if (ENV_VARS.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../../frontend/dist')));
