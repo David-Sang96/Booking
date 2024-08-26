@@ -84,7 +84,7 @@ const ReactDropZone = () => {
     [setValue, files, setError, clearErrors],
   );
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     maxSize: 5 * 1024 * 1024,
   });
