@@ -29,6 +29,6 @@ const upload = multer({
     fieldSize: 5 * 1024 * 1024, // 5MB (1024 * 1024 = 1 MB)
   },
   fileFilter,
-}).array('imageFiles', 6); // allow images to upload up to 6
+}).array('imagesFiles', 6); // allow images to upload up to 6
 
 export default upload;

@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { twMerge } from "tailwind-merge";
 import { HotelFormData } from "./ManageHotelForm";
 
@@ -6,7 +6,7 @@ const GuestsSection = () => {
   const {
     register,
     formState: { errors },
-  } = useForm<HotelFormData>();
+  } = useFormContext<HotelFormData>();
 
   const InputStyles =
     "w-full rounded border-2 px-2 py-2 font-normal focus:outline-none ";
@@ -16,7 +16,9 @@ const GuestsSection = () => {
       <h1 className="mb-3 text-2xl font-bold">Guests</h1>
       <div className="flex gap-4 max-md:flex-col">
         <label className="w-full">
-          <span className="inline-block pb-2 font-medium">Adults</span>
+          <span className="inline-block pb-2 text-sm font-semibold">
+            Adults
+          </span>
           <input
             type="number"
             min={1}
@@ -24,7 +26,7 @@ const GuestsSection = () => {
               InputStyles,
               errors.adultCount && "border-red-300",
             )}
-            {...register("adultCount", { required: "Adult  is required" })}
+            {...register("adultCount", { required: "Adult is required" })}
           />
           {errors.adultCount && (
             <span className="text-sm font-bold text-red-500">
@@ -33,18 +35,22 @@ const GuestsSection = () => {
           )}
         </label>
         <label className="w-full">
-          <span className="inline-block pb-2 font-medium">Children</span>
+          <span className="inline-block pb-2 text-sm font-semibold">
+            Children
+          </span>
           <input
             type="number"
-            min={1}
+            min={0}
             className={twMerge(
               InputStyles,
               errors.childCount && "border-red-300",
             )}
-            {...register("childCount", { required: "Children  is required" })}
+            {...register("childCount", { required: "Children is required" })}
           />
           {errors.childCount && (
-            <span className="text-red-500">{errors.childCount.message}</span>
+            <span className="text-sm font-bold text-red-500">
+              {errors.childCount.message}
+            </span>
           )}
         </label>
       </div>

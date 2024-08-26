@@ -26,7 +26,6 @@ const router = express.Router();
 
 router.post(
   '/',
-  hotelValidation,
   (req: Request, res: Response, next: NextFunction) => {
     uploadFiles(req, res, (err: any) => {
       if (err instanceof multer.MulterError) {

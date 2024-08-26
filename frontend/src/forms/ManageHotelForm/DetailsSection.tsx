@@ -53,7 +53,9 @@ const DetailsSection = () => {
             {...register("country", { required: "Country is required" })}
           />
           {errors.country && (
-            <span className="text-red-500">{errors.country.message}</span>
+            <span className="text-sm font-bold text-red-500">
+              {errors.country.message}
+            </span>
           )}
         </label>
       </div>

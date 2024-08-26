@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { hotelFacilities } from "../../config/hotel-options-config";
 import { HotelFormData } from "./ManageHotelForm";
 
@@ -6,7 +6,7 @@ const FacilitiesSection = () => {
   const {
     register,
     formState: { errors },
-  } = useForm<HotelFormData>();
+  } = useFormContext<HotelFormData>();
 
   return (
     <div>
@@ -15,7 +15,7 @@ const FacilitiesSection = () => {
         {hotelFacilities.map((facility) => (
           <label
             key={facility}
-            className="flex cursor-pointer items-center gap-3 rounded-full bg-white px-4 py-2 shadow"
+            className="flex cursor-pointer items-center gap-3 rounded-full bg-white px-4 py-2 text-sm shadow"
           >
             <input
               type="checkbox"
@@ -31,7 +31,8 @@ const FacilitiesSection = () => {
               })}
               className="relative size-[16px] appearance-none rounded-full border border-gray-400 checked:border-purple-500 checked:bg-purple-500"
             />
-            <p className="overflow-hidden text-ellipsis text-sm">{facility}</p>
+
+            {facility}
           </label>
         ))}
       </div>

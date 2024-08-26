@@ -67,3 +67,21 @@ export const logOut = async () => {
     }
   }
 };
+
+export const addMyHotel = async (hotelFormData: FormData) => {
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/my-hotels`,
+      hotelFormData,
+    );
+    const data = response.data;
+    return data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const message = error.response?.data.message || "An error occurred";
+      throw new Error(message);
+    } else {
+      throw new Error("An expected error occurred");
+    }
+  }
+};

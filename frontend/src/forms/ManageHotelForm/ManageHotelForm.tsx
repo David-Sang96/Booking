@@ -1,7 +1,10 @@
 import { FormProvider, useForm } from "react-hook-form";
+import { PiSpinnerBold } from "react-icons/pi";
+
 import DetailsSection from "./DetailsSection";
 import FacilitiesSection from "./FacilitiesSection";
 import GuestsSection from "./GuestsSection";
+import ImagesSection from "./ImagesSection";
 import TypeSection from "./TypeSection";
 
 export type HotelFormData = {
@@ -15,33 +18,61 @@ export type HotelFormData = {
   facilities: string[];
   pricePerNight: number;
   starRating: number;
-  imagesFiles: FileList;
+  imagesFiles: File[];
 };
 
-const ManageHotelForm = () => {
+type Props = {
+  isLoading: boolean;
+  onCreate: (hotelFormData: FormData) => void;
+};
+
+const ManageHotelForm = ({ onCreate, isLoading }: Props) => {
   const formMethods = useForm<HotelFormData>();
-  // const mutation = useMutation(apiClient.register, {
-  //   onSuccess: async () => {},
-  //   onError: async () => {},
-  // });
+  const { handleSubmit } = formMethods;
+
+  const onSubmit = handleSubmit((formDataJson: HotelFormData) => {
+    const formData = new FormData();
+    formData.append("name", formDataJson.name);
+    formData.append("city", formDataJson.city);
+    formData.append("country", formDataJson.country);
+    formData.append("description", formDataJson.description);
+    formData.append("type", formDataJson.type);
+    formData.append("adultCount", formDataJson.adultCount.toString());
+    formData.append("childCount", formDataJson.childCount.toString());
+    formData.append("pricePerNight", formDataJson.pricePerNight.toString());
+    formData.append("starRating", formDataJson.starRating.toString());
+
+    formDataJson.facilities.forEach((facility, index) =>
+      formData.append(`facilities[${index}]`, facility),
+    );
+
+    formDataJson.imagesFiles.forEach((imageFile) =>
+      formData.append("imagesFiles", imageFile),
+    );
+    onCreate(formData);
+  });
 
   return (
     <FormProvider {...formMethods}>
-      <form className="flex flex-col gap-5 max-md:px-10 lg:px-20">
+      <form
+        className="flex flex-col gap-5 max-md:px-10 lg:px-20"
+        onSubmit={onSubmit}
+      >
         <DetailsSection />
         <TypeSection />
         <FacilitiesSection />
         <GuestsSection />
-        <button
-          // disabled={mutation.isLoading}
-          type="submit"
-          className={`flex items-center gap-1 rounded border border-blue-800 bg-slate-50 px-3 py-2 text-sm duration-300 hover:bg-blue-800 hover:text-white md:text-base`}
-        >
-          {/* {mutation.isLoading && (
-            <PiSpinnerBold className="size-6 animate-spin" />
-          )} */}
-          <p> Login</p>
-        </button>
+        <ImagesSection />
+        <div className="mt-3 flex justify-end">
+          <button
+            disabled={isLoading}
+            type="submit"
+            className={`flex items-center gap-1 rounded border border-blue-800 bg-slate-50 px-3 py-2 text-sm duration-300 hover:bg-blue-800 hover:text-white md:text-base ${isLoading && "cursor-not-allowed"}`}
+          >
+            {isLoading && <PiSpinnerBold className="size-6 animate-spin" />}
+            <p> Create </p>
+          </button>
+        </div>
       </form>
     </FormProvider>
   );
