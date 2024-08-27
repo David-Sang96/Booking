@@ -138,9 +138,9 @@ export const updateMyHotel = async (hotelFormData: FormData) => {
   }
 };
 
-export const deleteMyHotelImage = async (url: string) => {
+export const deleteMyHotelImage = async (url: string, hotelId: string) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/my-hotels/image`, {
+    const response = await axios.post(`${API_BASE_URL}/my-hotels/${hotelId}`, {
       url,
     });
     const data = response.data;

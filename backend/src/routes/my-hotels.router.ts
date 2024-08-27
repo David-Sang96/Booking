@@ -49,7 +49,7 @@ router.post(
   createHotel
 );
 
-router.post('/image', deleteHotelImage);
+router.post('/:hotelId', deleteHotelImage);
 
 router.put(
   '/:hotelId',

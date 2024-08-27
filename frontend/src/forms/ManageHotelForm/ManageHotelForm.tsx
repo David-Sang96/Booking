@@ -2,6 +2,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { PiSpinnerBold } from "react-icons/pi";
 
 import { useEffect } from "react";
+import toast from "react-hot-toast";
 import { HotelDataType } from "../../../../backend/src/shared/types";
 import DetailsSection from "./DetailsSection";
 import FacilitiesSection from "./FacilitiesSection";
@@ -40,6 +41,10 @@ const ManageHotelForm = ({ onCreate, isLoading, hotelDetails }: Props) => {
 
   const onSubmit = handleSubmit((formDataJson: HotelFormData) => {
     const formData = new FormData();
+    if (hotelDetails === undefined && formDataJson.imagesFiles === undefined) {
+      return toast.error("Upload at least one image");
+    }
+
     if (hotelDetails) {
       formData.append("hotelId", hotelDetails._id);
     }
@@ -54,13 +59,13 @@ const ManageHotelForm = ({ onCreate, isLoading, hotelDetails }: Props) => {
     formData.append("pricePerNight", formDataJson.pricePerNight.toString());
     formData.append("starRating", formDataJson.starRating.toString());
 
-    formDataJson.facilities.forEach((facility) =>
-      formData.append(`facilities`, facility),
+    formDataJson.facilities.forEach((facility, index) =>
+      formData.append(`facilities[${index}]`, facility),
     );
 
     if (formDataJson.imageUrls) {
-      formDataJson.imageUrls.forEach((url) =>
-        formData.append(`imageUrls`, url),
+      formDataJson.imageUrls.forEach((url, index) =>
+        formData.append(`imageUrls[${index}]`, url),
       );
     }
 

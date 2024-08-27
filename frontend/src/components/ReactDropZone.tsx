@@ -6,6 +6,7 @@ import { RxCross2 } from "react-icons/rx";
 import { HotelFormData } from "../forms/ManageHotelForm/ManageHotelForm";
 
 import toast from "react-hot-toast";
+import { useParams } from "react-router-dom";
 import * as apiClient from "../api-client";
 
 interface FileWithPreview extends File {
@@ -16,11 +17,12 @@ const ReactDropZone = () => {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const { setValue, setError, clearErrors, watch } =
     useFormContext<HotelFormData>();
+  const { hotelId } = useParams();
 
   const existingImagesUrls = watch("imageUrls");
 
   useEffect(() => {
-    const totalLength = files.length + existingImagesUrls?.length;
+    const totalLength = files.length + (existingImagesUrls?.length || 0);
     if (totalLength === 0) {
       setError("imagesFiles", {
         type: "manual",
@@ -54,7 +56,7 @@ const ReactDropZone = () => {
       }
 
       const totalFiles =
-        files.length + acceptedFiles.length + existingImagesUrls.length;
+        files.length + acceptedFiles.length + existingImagesUrls?.length;
       if (totalFiles > 6) {
         setError("imagesFiles", {
           type: "manual",
@@ -107,7 +109,7 @@ const ReactDropZone = () => {
       "imageUrls",
       existingImagesUrls.filter((url) => url !== imageUrl),
     );
-    const delImg = await apiClient.deleteMyHotelImage(imageUrl);
+    const delImg = await apiClient.deleteMyHotelImage(imageUrl, hotelId || "");
     toast.success(delImg.message);
   };
 

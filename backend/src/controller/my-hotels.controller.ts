@@ -76,8 +76,8 @@ export const updateHotelDetails = async (req: Request, res: Response) => {
     }
 
     const imageFiles = req.files as Express.Multer.File[];
-    const updatedImageUrls = (await saveToCloudinary(imageFiles)) || [];
-    hotel.imageUrls = [...updatedImageUrls, ...updatedHotel.imageUrls];
+    const updatedImageUrls = await saveToCloudinary(imageFiles);
+    hotel.imageUrls = [...updatedImageUrls, ...(updatedHotel.imageUrls || [])];
 
     await hotel.save();
     res
@@ -92,11 +92,24 @@ export const updateHotelDetails = async (req: Request, res: Response) => {
 export const deleteHotelImage = async (req: Request, res: Response) => {
   try {
     const { url } = req.body;
+    const { hotelId } = req.params;
     const publicId = url.substring(
       url.lastIndexOf('/') + 1,
       url.lastIndexOf('.')
     );
     await cloudinary.uploader.destroy(publicId);
+    const hotel = await Hotel.findOne({ _id: hotelId, userId: req.userId });
+    if (!hotel) {
+      return res.status(400).json({
+        success: false,
+        message: 'Hotel not found',
+      });
+    }
+
+    const filterImageUrl = hotel.imageUrls.filter((imgUrl) => imgUrl !== url);
+    hotel.imageUrls = filterImageUrl;
+    await hotel.save();
+
     res.json({ success: true, message: 'Image deleted' });
   } catch (error) {
     console.error(error);
