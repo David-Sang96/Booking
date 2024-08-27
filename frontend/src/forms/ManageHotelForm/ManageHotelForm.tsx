@@ -1,6 +1,8 @@
 import { FormProvider, useForm } from "react-hook-form";
 import { PiSpinnerBold } from "react-icons/pi";
 
+import { useEffect } from "react";
+import { HotelDataType } from "../../../../backend/src/shared/types";
 import DetailsSection from "./DetailsSection";
 import FacilitiesSection from "./FacilitiesSection";
 import GuestsSection from "./GuestsSection";
@@ -19,19 +21,29 @@ export type HotelFormData = {
   pricePerNight: number;
   starRating: number;
   imagesFiles: File[];
+  imageUrls: string[];
 };
 
 type Props = {
   isLoading: boolean;
   onCreate: (hotelFormData: FormData) => void;
+  hotelDetails?: HotelDataType;
 };
 
-const ManageHotelForm = ({ onCreate, isLoading }: Props) => {
+const ManageHotelForm = ({ onCreate, isLoading, hotelDetails }: Props) => {
   const formMethods = useForm<HotelFormData>();
-  const { handleSubmit } = formMethods;
+  const { handleSubmit, reset } = formMethods;
+
+  useEffect(() => {
+    reset(hotelDetails);
+  }, [hotelDetails, reset]);
 
   const onSubmit = handleSubmit((formDataJson: HotelFormData) => {
     const formData = new FormData();
+    if (hotelDetails) {
+      formData.append("hotelId", hotelDetails._id);
+    }
+
     formData.append("name", formDataJson.name);
     formData.append("city", formDataJson.city);
     formData.append("country", formDataJson.country);
@@ -42,13 +54,21 @@ const ManageHotelForm = ({ onCreate, isLoading }: Props) => {
     formData.append("pricePerNight", formDataJson.pricePerNight.toString());
     formData.append("starRating", formDataJson.starRating.toString());
 
-    formDataJson.facilities.forEach((facility, index) =>
-      formData.append(`facilities[${index}]`, facility),
+    formDataJson.facilities.forEach((facility) =>
+      formData.append(`facilities`, facility),
     );
 
-    formDataJson.imagesFiles.forEach((imageFile) =>
-      formData.append("imagesFiles", imageFile),
-    );
+    if (formDataJson.imageUrls) {
+      formDataJson.imageUrls.forEach((url) =>
+        formData.append(`imageUrls`, url),
+      );
+    }
+
+    if (formDataJson.imagesFiles) {
+      formDataJson.imagesFiles.forEach((imageFile) =>
+        formData.append("imagesFiles", imageFile),
+      );
+    }
     onCreate(formData);
   });
 
@@ -63,6 +83,7 @@ const ManageHotelForm = ({ onCreate, isLoading }: Props) => {
         <FacilitiesSection />
         <GuestsSection />
         <ImagesSection />
+
         <div className="mt-3 flex justify-end">
           <button
             disabled={isLoading}
@@ -70,7 +91,7 @@ const ManageHotelForm = ({ onCreate, isLoading }: Props) => {
             className={`flex items-center gap-1 rounded border border-blue-800 bg-slate-50 px-3 py-2 text-sm duration-300 hover:bg-blue-800 hover:text-white md:text-base ${isLoading && "cursor-not-allowed"}`}
           >
             {isLoading && <PiSpinnerBold className="size-6 animate-spin" />}
-            <p> Create </p>
+            <p> {hotelDetails?._id ? "Update" : "Create "}</p>
           </button>
         </div>
       </form>

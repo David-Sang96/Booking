@@ -11,6 +11,7 @@ import MyHotels from "../pages/MyHotels";
 import Register from "../pages/Register";
 import Search from "../pages/Search";
 import SignIn from "../pages/SignIn";
+import UpdateHotel from "../pages/UpdateHotel";
 
 const Routes = () => {
   const { isLoggedIn } = useAppContext();
@@ -53,6 +54,14 @@ const Routes = () => {
           path: "/my-hotels",
           element: isLoggedIn ? (
             <MyHotels />
+          ) : (
+            <Navigate to={"/sign-in"} replace />
+          ),
+        },
+        {
+          path: "/edit-hotel/:hotelId",
+          element: isLoggedIn ? (
+            <UpdateHotel />
           ) : (
             <Navigate to={"/sign-in"} replace />
           ),

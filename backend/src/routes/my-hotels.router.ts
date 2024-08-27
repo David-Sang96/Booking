@@ -1,7 +1,13 @@
 import express, { NextFunction, Request, Response } from 'express';
 import { body } from 'express-validator';
 import multer from 'multer';
-import { createHotel, getHotel } from '../controller/my-hotels.controller';
+import {
+  createHotel,
+  deleteHotelImage,
+  getHotelDetails,
+  getHotels,
+  updateHotelDetails,
+} from '../controller/my-hotels.controller';
 import uploadFiles from '../ultis/uploadFiles';
 import { validationResults } from '../ultis/validationResults';
 
@@ -24,6 +30,9 @@ const hotelValidation = [
 
 const router = express.Router();
 
+router.get('/', getHotels);
+router.get('/:id', getHotelDetails);
+
 router.post(
   '/',
   (req: Request, res: Response, next: NextFunction) => {
@@ -40,6 +49,22 @@ router.post(
   createHotel
 );
 
-router.get('/', getHotel);
+router.post('/image', deleteHotelImage);
+
+router.put(
+  '/:hotelId',
+  (req: Request, res: Response, next: NextFunction) => {
+    uploadFiles(req, res, (err: any) => {
+      if (err instanceof multer.MulterError) {
+        return res.status(400).json({ success: false, message: err.message });
+      } else if (err) {
+        return res.status(400).json({ success: false, message: err.message });
+      }
+      next();
+    });
+  },
+  hotelValidation,
+  updateHotelDetails
+);
 
 export default router;

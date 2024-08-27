@@ -5,37 +5,33 @@ import { FaCloudUploadAlt } from "react-icons/fa";
 import { RxCross2 } from "react-icons/rx";
 import { HotelFormData } from "../forms/ManageHotelForm/ManageHotelForm";
 
+import toast from "react-hot-toast";
+import * as apiClient from "../api-client";
+
 interface FileWithPreview extends File {
   preview: string;
 }
 
-// type FileWithPreview = File & {
-//   preview: string;
-// };
-
-// interface FilePreview {
-//   preview: string;
-// }
-
-// type FileWithPreview = File & FilePreview;
-
 const ReactDropZone = () => {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
+  const { setValue, setError, clearErrors, watch } =
+    useFormContext<HotelFormData>();
 
-  const { setValue, setError, clearErrors } = useFormContext<HotelFormData>();
+  const existingImagesUrls = watch("imageUrls");
 
   useEffect(() => {
-    if (files.length === 0) {
+    const totalLength = files.length + existingImagesUrls?.length;
+    if (totalLength === 0) {
       setError("imagesFiles", {
         type: "manual",
         message: "At least one image must be upload",
       });
     }
-  }, [files, setError]);
+  }, [files, setError, existingImagesUrls]);
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
-      const acceptFileNames = acceptedFiles.map((item) => item.name);
+      const acceptFileNames = acceptedFiles.map((file) => file.name);
       const droppedFileNames = files.map((file) => file.name);
 
       if (acceptFileNames.some((name) => droppedFileNames.includes(name))) {
@@ -57,7 +53,8 @@ const ReactDropZone = () => {
         return;
       }
 
-      const totalFiles = files.length + acceptedFiles.length;
+      const totalFiles =
+        files.length + acceptedFiles.length + existingImagesUrls.length;
       if (totalFiles > 6) {
         setError("imagesFiles", {
           type: "manual",
@@ -81,7 +78,7 @@ const ReactDropZone = () => {
         return updatedFiles;
       });
     },
-    [setValue, files, setError, clearErrors],
+    [setValue, files, setError, clearErrors, existingImagesUrls],
   );
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -101,8 +98,21 @@ const ReactDropZone = () => {
     }
   };
 
+  const handleDeleteSavedImage = async (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    imageUrl: string,
+  ) => {
+    event.preventDefault();
+    setValue(
+      "imageUrls",
+      existingImagesUrls.filter((url) => url !== imageUrl),
+    );
+    const delImg = await apiClient.deleteMyHotelImage(imageUrl);
+    toast.success(delImg.message);
+  };
+
   return (
-    <div className="grid sm:gap-4 lg:grid-cols-2">
+    <div className="space-y-4">
       <div
         {...getRootProps()}
         className="flex items-center rounded-md border-2 border-dotted border-black p-12 focus:outline-none max-sm:p-6"
@@ -114,31 +124,56 @@ const ReactDropZone = () => {
         </div>
       </div>
 
-      {/* Preview */}
       <div className="flex flex-wrap gap-3">
-        {files.map((file) => (
-          <div key={file.name}>
-            <p className="relative rounded-md bg-white p-2">
-              <button
-                type="button"
-                onClick={() => removeFile(file.name)}
-                className="absolute -right-2 -top-2"
-              >
-                <RxCross2 className="size-5 rounded-full bg-red-600 text-white" />
-              </button>
-              <img
-                src={file.preview}
-                alt={file.name}
-                className="h-24 w-24 rounded-md object-cover"
-                onLoad={() => {
-                  //prevents memory leaks by freeing up the resources used by the temporary URLs
-                  URL.revokeObjectURL(file.preview);
-                }}
-              />
-            </p>
-            <p className="text-sm">{file.name.slice(0, 15)}</p>
+        {/* Preview Images */}
+        <div className="flex flex-wrap gap-3">
+          {files.map((file) => (
+            <div key={file.name}>
+              <p className="relative rounded-md bg-white p-2">
+                <button
+                  type="button"
+                  onClick={() => removeFile(file.name)}
+                  className="absolute -right-2 -top-2"
+                >
+                  <RxCross2 className="size-5 rounded-full bg-red-600 text-white" />
+                </button>
+                <img
+                  src={file.preview}
+                  alt={file.name}
+                  className="h-28 w-28 rounded-md object-cover"
+                  onLoad={() => {
+                    //prevents memory leaks by freeing up the resources used by the temporary URLs
+                    URL.revokeObjectURL(file.preview);
+                  }}
+                />
+              </p>
+              <p className="text-sm">{file.name.slice(0, 15)}</p>
+            </div>
+          ))}
+        </div>
+        {/* Preview existing images */}
+        {existingImagesUrls?.length > 0 && (
+          <div className="flex flex-wrap gap-3">
+            {existingImagesUrls.map((url) => (
+              <div key={url}>
+                <p className="relative rounded-md bg-white p-2">
+                  <button
+                    type="button"
+                    onClick={(e) => handleDeleteSavedImage(e, url)}
+                    className="absolute -right-2 -top-2"
+                  >
+                    <RxCross2 className="size-5 rounded-full bg-red-600 text-white" />
+                  </button>
+                  <img
+                    src={url}
+                    alt="hotel image"
+                    className="h-28 w-28 rounded-md object-cover"
+                  />
+                </p>
+              </div>
+            ))}
           </div>
-        ))}
+        )}
       </div>
     </div>
   );
