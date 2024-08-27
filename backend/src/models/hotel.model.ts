@@ -1,21 +1,5 @@
 import mongoose from 'mongoose';
-
-export type HotelDataType = {
-  _id: string;
-  userId: string;
-  name: string;
-  city: string;
-  country: string;
-  description: string;
-  type: string;
-  adultCount: number;
-  childCount: number;
-  facilities: string[];
-  pricePerNight: number;
-  starRating: number;
-  imageUrls: string[];
-  lastUpdated: Date;
-};
+import { HotelDataType } from '../shared/types';
 
 const hotelSchema = new mongoose.Schema<HotelDataType>(
   {
@@ -34,6 +18,17 @@ const hotelSchema = new mongoose.Schema<HotelDataType>(
     lastUpdated: { type: Date, required: true },
   },
   { timestamps: true }
+);
+
+// The first HotelDataType represents the type of the document being queried
+// The second HotelDataType represents the type of the document that will be returned by the query.
+hotelSchema.pre(
+  /^find/,
+  function (this: mongoose.Query<HotelDataType, HotelDataType>, next) {
+    this.select('-__v');
+    this.sort('-createdAt');
+    next();
+  }
 );
 
 const Hotel = mongoose.model<HotelDataType>('Hotel', hotelSchema);

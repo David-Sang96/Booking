@@ -1,7 +1,7 @@
 import express, { NextFunction, Request, Response } from 'express';
 import { body } from 'express-validator';
 import multer from 'multer';
-import { createHotel } from '../controller/my-hotels.controller';
+import { createHotel, getHotel } from '../controller/my-hotels.controller';
 import uploadFiles from '../ultis/uploadFiles';
 import { validationResults } from '../ultis/validationResults';
 
@@ -39,5 +39,7 @@ router.post(
   hotelValidation,
   createHotel
 );
+
+router.get('/', getHotel);
 
 export default router;

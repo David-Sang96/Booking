@@ -1,4 +1,5 @@
 import axios from "axios";
+import { HotelDataType } from "./../../backend/src/shared/types";
 import { RegisterFormData } from "./pages/Register";
 import { SignInFormData } from "./pages/SignIn";
 
@@ -63,7 +64,7 @@ export const logOut = async () => {
       const message = error.response?.data.message || "An error occurred";
       throw new Error(message);
     } else {
-      throw new Error("An expected error occurred");
+      throw new Error("An unexpected error occurred");
     }
   }
 };
@@ -81,7 +82,22 @@ export const addMyHotel = async (hotelFormData: FormData) => {
       const message = error.response?.data.message || "An error occurred";
       throw new Error(message);
     } else {
-      throw new Error("An expected error occurred");
+      throw new Error("An unexpected error occurred");
+    }
+  }
+};
+
+export const getMyHotels = async (): Promise<HotelDataType[]> => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/my-hotels`);
+    const data = response.data.hotels;
+    return data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const message = error.response?.data.message || "An error occurred";
+      throw new Error(message);
+    } else {
+      throw new Error("An unexpected error occurred");
     }
   }
 };

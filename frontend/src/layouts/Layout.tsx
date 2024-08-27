@@ -9,7 +9,7 @@ const Layout = () => {
     <div className="flex min-h-screen flex-col">
       <Header />
       <Hero />
-      <div className="container mx-auto flex-1 py-10">
+      <div className="container mx-auto flex-1 py-4">
         <Outlet />
       </div>
       <Footer />
