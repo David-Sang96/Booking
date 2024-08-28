@@ -65,7 +65,9 @@ test('should display hotels', async ({ page }) => {
   await expect(page.getByText('5 adults, 6 children')).toBeVisible();
   await expect(page.getByText('5 adults, 6 children')).toBeVisible();
 
-  await expect(page.getByRole('link', { name: 'View Details' })).toBeVisible();
+  await expect(
+    page.getByRole('link', { name: 'View Details' }).first()
+  ).toBeVisible();
   await expect(page.getByRole('link', { name: 'Add Hotel' })).toBeVisible();
 });
 
@@ -76,4 +78,12 @@ test('should update hotel', async ({ page }) => {
 
   await page.waitForSelector('[name="name"]', { state: 'attached' });
   await expect(page.locator('[name="name"]')).toHaveValue('test hotel');
+  await page.locator('[name="name"]').fill('test hotel updated');
+  await page.getByRole('button', { name: 'Update' }).click();
+  await expect(page.getByText('Updated hotel successfully')).toBeVisible();
+
+  await page.reload();
+  await expect(page.locator('[name="name"]')).toHaveValue('test hotel updated');
+  await page.locator('[name="name"]').fill('test hotel');
+  await page.getByRole('button', { name: 'Update' }).click();
 });
