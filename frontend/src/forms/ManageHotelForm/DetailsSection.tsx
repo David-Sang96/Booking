@@ -1,6 +1,6 @@
 import { useFormContext } from "react-hook-form";
 import { twMerge } from "tailwind-merge";
-import { HotelFormData } from "./ManageHotelForm";
+import { HotelFormData } from "../../types/hotelFormDataTypes";
 
 const DetailsSection = () => {
   const {

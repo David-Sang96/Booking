@@ -7,6 +7,7 @@ import { useAppContext } from "../contexts/AppContext";
 import Layout from "../layouts/Layout";
 import AddHotel from "../pages/AddHotel";
 import Home from "../pages/Home";
+import HotelDetails from "../pages/HotelDetails";
 import MyHotels from "../pages/MyHotels";
 import Register from "../pages/Register";
 import Search from "../pages/Search";
@@ -62,6 +63,14 @@ const Routes = () => {
           path: "/edit-hotel/:hotelId",
           element: isLoggedIn ? (
             <UpdateHotel />
+          ) : (
+            <Navigate to={"/sign-in"} replace />
+          ),
+        },
+        {
+          path: "/details/:hotelId",
+          element: isLoggedIn ? (
+            <HotelDetails />
           ) : (
             <Navigate to={"/sign-in"} replace />
           ),

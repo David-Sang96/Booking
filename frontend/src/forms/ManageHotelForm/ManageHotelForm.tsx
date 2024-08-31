@@ -4,26 +4,12 @@ import { PiSpinnerBold } from "react-icons/pi";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { HotelDataType } from "../../../../backend/src/shared/types";
+import { HotelFormData } from "../../types/hotelFormDataTypes";
 import DetailsSection from "./DetailsSection";
 import FacilitiesSection from "./FacilitiesSection";
 import GuestsSection from "./GuestsSection";
 import ImagesSection from "./ImagesSection";
 import TypeSection from "./TypeSection";
-
-export type HotelFormData = {
-  name: string;
-  city: string;
-  country: string;
-  description: string;
-  type: string;
-  adultCount: number;
-  childCount: number;
-  facilities: string[];
-  pricePerNight: number;
-  starRating: number;
-  imagesFiles: File[];
-  imageUrls: string[];
-};
 
 type Props = {
   isLoading: boolean;

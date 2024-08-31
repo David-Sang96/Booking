@@ -1,7 +1,7 @@
 import { useFormContext } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import ReactDropZone from "../../components/ReactDropZone";
-import { HotelFormData } from "./ManageHotelForm";
+import { HotelFormData } from "../../types/hotelFormDataTypes";
 
 const ImagesSection = () => {
   const {

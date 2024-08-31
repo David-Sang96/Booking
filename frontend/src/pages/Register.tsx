@@ -9,14 +9,7 @@ import { twMerge } from "tailwind-merge";
 
 import { useState } from "react";
 import * as apiClient from "../api-client";
-
-export type RegisterFormData = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-};
+import { RegisterFormData } from "../types/authTypes";
 
 const Register = () => {
   // const { showToast } = useAppContext();

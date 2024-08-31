@@ -3,11 +3,11 @@ import { useDropzone } from "react-dropzone";
 import { useFormContext } from "react-hook-form";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { RxCross2 } from "react-icons/rx";
-import { HotelFormData } from "../forms/ManageHotelForm/ManageHotelForm";
 
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import * as apiClient from "../api-client";
+import { HotelFormData } from "../types/hotelFormDataTypes";
 
 interface FileWithPreview extends File {
   preview: string;

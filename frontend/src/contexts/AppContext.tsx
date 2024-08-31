@@ -4,18 +4,9 @@ import { useQuery } from "react-query";
 
 import * as apiClient from "../api-client";
 import Toast from "../components/Toast";
+import { AppContextType, ToastMessage } from "../types/appContextTypes";
 
-type ToastMessage = {
-  message: string;
-  type: "SUCCESS" | "ERROR";
-};
-
-type AppContext = {
-  showToast: (toastMessage: ToastMessage) => void;
-  isLoggedIn: boolean;
-};
-
-const AppContext = createContext<AppContext | undefined>(undefined);
+const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppContextProvider = ({
   children,
@@ -52,5 +43,5 @@ export const useAppContext = () => {
   if (context === undefined) {
     throw new Error("useAppContext must be used within an AppContextProvider");
   }
-  return context as AppContext;
+  return context as AppContextType;
 };

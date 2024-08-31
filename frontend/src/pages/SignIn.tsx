@@ -9,11 +9,7 @@ import { twMerge } from "tailwind-merge";
 
 import { PiSpinnerBold } from "react-icons/pi";
 import * as apiClient from "../api-client";
-
-export type SignInFormData = {
-  email: string;
-  password: string;
-};
+import { SignInFormData } from "../types/authTypes";
 
 const SignIn = () => {
   const [passwordShown, setPasswordShown] = useState(false);
@@ -33,6 +29,7 @@ const SignIn = () => {
 
   const mutation = useMutation(apiClient.signIn, {
     onSuccess: async (data) => {
+      // force validateToken function to run again
       await queryClient.invalidateQueries("validateToken");
       toast.success(data.message);
       navigate("/");

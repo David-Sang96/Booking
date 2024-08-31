@@ -9,6 +9,7 @@ import { connectDB } from './config/db';
 import { ENV_VARS } from './config/envVars';
 import verifyToken from './middleware/auth';
 import authRoutes from './routes/auth.router';
+import hotelRoutes from './routes/hotels.router';
 import myHotelsRoutes from './routes/my-hotels.router';
 import userRoutes from './routes/user.router';
 
@@ -34,6 +35,7 @@ app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/auth', authRoutes);
 
 app.use('/api/v1/my-hotels', verifyToken, myHotelsRoutes);
+app.use('/api/v1/hotels', verifyToken, hotelRoutes);
 
 if (ENV_VARS.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../../frontend/dist')));

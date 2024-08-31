@@ -1,7 +1,10 @@
 import axios from "axios";
-import { HotelDataType } from "./../../backend/src/shared/types";
-import { RegisterFormData } from "./pages/Register";
-import { SignInFormData } from "./pages/SignIn";
+import {
+  HotelDataType,
+  HotelSearchResponse,
+} from "./../../backend/src/shared/types";
+import { RegisterFormData, SignInFormData } from "./types/authTypes";
+import { SearchParams } from "./types/searchContextTypes";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 axios.defaults.withCredentials = true;
@@ -143,6 +146,43 @@ export const deleteMyHotelImage = async (url: string, hotelId: string) => {
     const response = await axios.post(`${API_BASE_URL}/my-hotels/${hotelId}`, {
       url,
     });
+    const data = response.data;
+    return data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const message = error.response?.data.message || "An error occurred";
+      throw new Error(message);
+    } else {
+      throw new Error("An unexpected error occurred");
+    }
+  }
+};
+
+export const getSearchHotels = async (
+  searchParams: SearchParams,
+): Promise<HotelSearchResponse> => {
+  try {
+    const paramsObj = {
+      destination: searchParams.destination || "",
+      checkIn: searchParams.checkIn || "",
+      checkOut: searchParams.checkOut || "",
+      adultCount: searchParams.adultCount || "",
+      childCount: searchParams.childCount || "",
+      page: searchParams.page || "",
+      maxPrice: searchParams.maxPrice || "",
+      sortOption: searchParams.sortOption || "",
+    };
+    const queryParams = new URLSearchParams(paramsObj); // output "destination=Paris&page=1"
+
+    searchParams.facilities?.forEach((facility) =>
+      queryParams.append("facilities", facility),
+    );
+    searchParams.types?.forEach((type) => queryParams.append("types", type));
+    searchParams.stars?.forEach((star) => queryParams.append("stars", star));
+
+    const response = await axios.get(
+      `${API_BASE_URL}/hotels/search?${queryParams}`,
+    );
     const data = response.data;
     return data;
   } catch (error) {
