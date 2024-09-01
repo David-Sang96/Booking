@@ -47,7 +47,9 @@ const SearchResultCard = ({ hotel }: Props) => {
             {name}
           </Link>
         </div>
-        <div className="line-clamp-4">{description}</div>
+        <div>
+          <div className="line-clamp-4">{description}</div>
+        </div>
         <div className="grid grid-cols-2 items-end whitespace-nowrap">
           <FacilityCard facilities={facilities} />
           <div className="flex flex-col items-end gap-1 font-bold">

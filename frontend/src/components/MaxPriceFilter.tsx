@@ -15,7 +15,7 @@ const MaxPriceFilter = ({ selectedPrice, onChange }: Props) => {
         className="w-full cursor-pointer rounded-md border p-2 focus:outline-none"
       >
         <option>Select Max Price</option>
-        {[50, 100, 200, 300, 500].map((price) => (
+        {[50, 100, 200, 300, 500, 600].map((price) => (
           <option value={price} key={price}>
             {price}
           </option>

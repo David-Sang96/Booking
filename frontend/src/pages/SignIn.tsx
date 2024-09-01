@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa6";
 import { useMutation, useQueryClient } from "react-query";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
 
 import { PiSpinnerBold } from "react-icons/pi";
@@ -20,6 +20,7 @@ const SignIn = () => {
     formState: { errors },
   } = useForm<SignInFormData>();
   const navigate = useNavigate();
+  const location = useLocation();
   const queryClient = useQueryClient();
 
   const togglePasswordVisibility = () => {
@@ -32,12 +33,17 @@ const SignIn = () => {
       // force validateToken function to run again
       await queryClient.invalidateQueries("validateToken");
       toast.success(data.message);
-      navigate("/");
     },
     onError: (error: Error) => {
       toast.error(error.message);
     },
   });
+
+  useEffect(() => {
+    if (mutation.isSuccess) {
+      navigate(location.state?.from?.pathname || "/", { replace: true });
+    }
+  }, [mutation.isSuccess, navigate, location.state?.from?.pathname]);
 
   const onSubmit = handleSubmit((data: SignInFormData) => {
     mutation.mutate(data);

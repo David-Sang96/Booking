@@ -11,7 +11,7 @@ const UpdateHotel = () => {
 
   const { data: hotel } = useQuery(
     "getHotelDetails",
-    () => apiClient.getMyHotelDetails(hotelId || ""),
+    () => apiClient.getMyHotelDetails(hotelId as string),
     {
       enabled: !!hotelId,
       onError: (error: Error) => {

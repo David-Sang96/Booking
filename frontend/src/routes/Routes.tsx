@@ -24,24 +24,20 @@ const Routes = () => {
       children: [
         {
           index: true,
-          element: isLoggedIn ? <Home /> : <Navigate to={"/sign-in"} replace />,
+          // element: isLoggedIn ? <Home /> : <Navigate to={"/sign-in"} replace />,
+          element: <Home />,
         },
-
         {
           path: "/register",
-          element: !isLoggedIn ? <Register /> : <Navigate to={"/"} replace />,
+          element: <Register />,
         },
         {
           path: "/sign-in",
-          element: !isLoggedIn ? <SignIn /> : <Navigate to={"/"} replace />,
+          element: <SignIn />,
         },
         {
           path: "/search",
-          element: isLoggedIn ? (
-            <Search />
-          ) : (
-            <Navigate to={"/sign-in"} replace />
-          ),
+          element: <Search />,
         },
         {
           path: "/add-hotel",
@@ -69,11 +65,7 @@ const Routes = () => {
         },
         {
           path: "/details/:hotelId",
-          element: isLoggedIn ? (
-            <HotelDetails />
-          ) : (
-            <Navigate to={"/sign-in"} replace />
-          ),
+          element: <HotelDetails />,
         },
       ],
     },

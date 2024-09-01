@@ -5,7 +5,7 @@ import { constructSearchQuery } from '../ultis/constructSearchQuery';
 
 export const searchHotels = async (req: Request, res: Response) => {
   try {
-    console.log(req.query);
+    // console.log(req.query);
     const query = constructSearchQuery(req.query);
 
     let sortOptions = {};
@@ -45,6 +45,24 @@ export const searchHotels = async (req: Request, res: Response) => {
     res.json(response);
   } catch (error) {
     console.log('Error in searchHotels controller: ', error);
+    res.status(500).json({ success: false, message: 'something went wrong' });
+  }
+};
+
+export const hotelDetails = async (req: Request, res: Response) => {
+  try {
+    const { hotelId } = req.params;
+    const hotel = await Hotel.findById(hotelId);
+    if (!hotel) {
+      return res.status(400).json({
+        success: false,
+        message: 'Hotel not found',
+      });
+    }
+
+    res.json({ success: true, hotel });
+  } catch (error) {
+    console.log('Error in hotelDetails controller: ', error);
     res.status(500).json({ success: false, message: 'something went wrong' });
   }
 };

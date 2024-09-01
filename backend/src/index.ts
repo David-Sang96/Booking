@@ -35,7 +35,7 @@ app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/auth', authRoutes);
 
 app.use('/api/v1/my-hotels', verifyToken, myHotelsRoutes);
-app.use('/api/v1/hotels', verifyToken, hotelRoutes);
+app.use('/api/v1/hotels', hotelRoutes);
 
 if (ENV_VARS.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../../frontend/dist')));
