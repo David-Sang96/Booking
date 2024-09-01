@@ -63,7 +63,6 @@ const SearchBar = () => {
           Children:
           <input
             type="number"
-            min={1}
             max={20}
             className="w-full p-1 font-bold focus:outline-none"
             value={childCount}

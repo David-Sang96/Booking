@@ -9,7 +9,7 @@ export const searchHotels = async (req: Request, res: Response) => {
     const query = constructSearchQuery(req.query);
 
     let sortOptions = {};
-    switch (req.query.sortOptions) {
+    switch (req.query.sortOption) {
       case 'starRating':
         sortOptions = { starRating: -1 };
         break;
@@ -20,7 +20,7 @@ export const searchHotels = async (req: Request, res: Response) => {
         sortOptions = { pricePerNight: -1 };
     }
 
-    const pageCount = 5;
+    const pageCount = 6;
     const pageNumber = parseInt(
       req.query.page ? req.query.page.toString() : '1'
     );

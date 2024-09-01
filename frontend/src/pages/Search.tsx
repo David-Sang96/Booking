@@ -17,6 +17,7 @@ const Search = () => {
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedFacilities, setSelectedFacilities] = useState<string[]>([]);
   const [selectedPrice, setSelectedPrice] = useState<number | undefined>();
+  const [selectedOption, setSelectedOption] = useState<string>("");
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -33,6 +34,7 @@ const Search = () => {
     types: selectedTypes,
     facilities: selectedFacilities,
     maxPrice: selectedPrice?.toString(),
+    sortOption: selectedOption,
   };
 
   const { data: hotelData } = useQuery(["searchHotels", searchParams], () =>
@@ -96,15 +98,17 @@ const Search = () => {
             {hotelData?.pagination.total} Hotels found
             {search.destination ? ` in ${search.destination}` : ""}
           </span>
-          {/* TODO sort options */}
-
-          <select className="cursor-pointer rounded-md px-1 py-1.5 focus:outline-none">
+          <select
+            className="cursor-pointer rounded-md px-1 py-1.5 focus:outline-none"
+            value={selectedOption}
+            onChange={(e) => setSelectedOption(e.target.value)}
+          >
             <option value="">Sort By</option>
-            <option value="star rating">Star Rating</option>
-            <option value="price per night (low to high)">
+            <option value="starRating">Star Rating</option>
+            <option value="pricePerNightAsc">
               Price Per Night ( low to high )
             </option>
-            <option value="price per night (high to low)">
+            <option value="pricePerNightDesc">
               Price Per Night ( high to low )
             </option>
           </select>
