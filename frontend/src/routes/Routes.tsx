@@ -6,6 +6,7 @@ import {
 import { useAppContext } from "../contexts/AppContext";
 import Layout from "../layouts/Layout";
 import AddHotel from "../pages/AddHotel";
+import Booking from "../pages/Booking";
 import Home from "../pages/Home";
 import HotelDetails from "../pages/HotelDetails";
 import MyHotels from "../pages/MyHotels";
@@ -40,6 +41,10 @@ const Routes = () => {
           element: <Search />,
         },
         {
+          path: "/details/:hotelId",
+          element: <HotelDetails />,
+        },
+        {
           path: "/add-hotel",
           element: isLoggedIn ? (
             <AddHotel />
@@ -64,8 +69,12 @@ const Routes = () => {
           ),
         },
         {
-          path: "/details/:hotelId",
-          element: <HotelDetails />,
+          path: "/hotel/:hotelId/booking",
+          element: isLoggedIn ? (
+            <Booking />
+          ) : (
+            <Navigate to={"/sign-in"} replace />
+          ),
         },
       ],
     },

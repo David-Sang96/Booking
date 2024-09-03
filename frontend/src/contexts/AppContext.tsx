@@ -1,4 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
+import { loadStripe } from "@stripe/stripe-js";
 import React, { createContext, useContext, useState } from "react";
 import { useQuery } from "react-query";
 
@@ -6,7 +7,10 @@ import * as apiClient from "../api-client";
 import Toast from "../components/Toast";
 import { AppContextType, ToastMessage } from "../types/appContextTypes";
 
+const STRIPE_PUB_KEY = import.meta.env.VITE_STRIPE_PUB_KEY;
+
 const AppContext = createContext<AppContextType | undefined>(undefined);
+const stripePromise = loadStripe(STRIPE_PUB_KEY);
 
 export const AppContextProvider = ({
   children,
@@ -24,6 +28,7 @@ export const AppContextProvider = ({
       value={{
         showToast: (toastMessage) => setToast(toastMessage),
         isLoggedIn: !isError,
+        stripePromise,
       }}
     >
       {toast && (

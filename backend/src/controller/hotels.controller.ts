@@ -1,7 +1,17 @@
 import { Request, Response } from 'express';
+import Stripe from 'stripe';
+import {
+  BookingType,
+  HotelSearchResponse,
+  PaymentIntentResponse,
+} from './../shared/types';
+
+import { ENV_VARS } from '../config/envVars';
 import Hotel from '../models/hotel.model';
-import { HotelSearchResponse } from '../shared/types';
+
 import { constructSearchQuery } from '../ultis/constructSearchQuery';
+
+const stripe = new Stripe(ENV_VARS.STRIPE_SECRET_KEY as string);
 
 export const searchHotels = async (req: Request, res: Response) => {
   try {
@@ -63,6 +73,103 @@ export const hotelDetails = async (req: Request, res: Response) => {
     res.json({ success: true, hotel });
   } catch (error) {
     console.log('Error in hotelDetails controller: ', error);
+    res.status(500).json({ success: false, message: 'something went wrong' });
+  }
+};
+
+export const createPayment = async (req: Request, res: Response) => {
+  try {
+    const { numberOfNights } = req.body;
+    const { hotelId } = req.params;
+    const hotel = await Hotel.findById(hotelId);
+
+    if (!hotel) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Hotel not found' });
+    }
+
+    const totalCost = hotel.pricePerNight * numberOfNights;
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: totalCost,
+      currency: 'gbp',
+      metadata: {
+        hotelId,
+        userId: req.userId,
+      },
+    });
+
+    if (!paymentIntent.client_secret) {
+      return res
+        .status(500)
+        .json({ success: false, message: 'Error creating payment intent' });
+    }
+
+    const response: PaymentIntentResponse = {
+      paymentIntentId: paymentIntent.id,
+      clientSecret: paymentIntent.client_secret.toString(),
+      totalCost,
+    };
+
+    res.json({ success: true, response });
+  } catch (error) {
+    console.log('Error in hotelPayment controller: ', error);
+    res.status(500).json({ success: false, message: 'something went wrong' });
+  }
+};
+
+export const confirmPayment = async (req: Request, res: Response) => {
+  try {
+    const { hotelId } = req.params;
+    const { paymentIntentId } = req.body;
+
+    const paymentIntent = await stripe.paymentIntents.retrieve(
+      paymentIntentId as string
+    );
+    if (!paymentIntent) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'payment intent not found' });
+    }
+
+    if (
+      paymentIntent.metadata.hotelId !== hotelId ||
+      paymentIntent.metadata.userId !== req.userId
+    ) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'payment intent mismatch' });
+    }
+
+    if (paymentIntent.status !== 'succeeded') {
+      return res.status(400).json({
+        success: false,
+        message: `payment intent not succeeded. Status: ${paymentIntent.status}`,
+      });
+    }
+
+    const newBooking: BookingType = {
+      ...req.body,
+      userId: req.userId,
+    };
+
+    const hotel = await Hotel.findOneAndUpdate(
+      { _id: hotelId },
+      {
+        $push: { bookings: newBooking },
+      }
+    );
+
+    if (!hotel) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Hotel not found' });
+    }
+    await hotel.save();
+
+    res.json({ success: true, message: 'payment success' });
+  } catch (error) {
+    console.log('Error in confirmPayment controller: ', error);
     res.status(500).json({ success: false, message: 'something went wrong' });
   }
 };
