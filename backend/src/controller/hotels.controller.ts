@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Stripe from 'stripe';
 import {
   BookingType,
+  HotelDataType,
   HotelSearchResponse,
   PaymentIntentResponse,
 } from './../shared/types';
@@ -15,7 +16,6 @@ const stripe = new Stripe(ENV_VARS.STRIPE_SECRET_KEY as string);
 
 export const searchHotels = async (req: Request, res: Response) => {
   try {
-    // console.log(req.query);
     const query = constructSearchQuery(req.query);
 
     let sortOptions = {};
@@ -157,7 +157,8 @@ export const confirmBooking = async (req: Request, res: Response) => {
       { _id: hotelId },
       {
         $push: { bookings: newBooking },
-      }
+      },
+      { new: true }
     );
 
     if (!hotel) {
@@ -165,11 +166,38 @@ export const confirmBooking = async (req: Request, res: Response) => {
         .status(400)
         .json({ success: false, message: 'Hotel not found' });
     }
-    await hotel.save();
 
     res.json({ success: true, message: 'Booking saved' });
   } catch (error) {
     console.log('Error in confirmBooking controller: ', error);
+    res.status(500).json({ success: false, message: 'something went wrong' });
+  }
+};
+
+export const getMyBooking = async (req: Request, res: Response) => {
+  try {
+    //return the entire hotel documents
+    const hotels = await Hotel.find({
+      bookings: { $elemMatch: { userId: req.userId } },
+    });
+
+    const myBookings = hotels.map((hotel) => {
+      // filter only the bookings for the logged-in user
+      const userBookings = hotel.bookings.filter(
+        (booking) => booking.userId === req.userId
+      );
+
+      const hotelWithUserBookings: HotelDataType = {
+        ...hotel.toObject(), // convert mongodb object to object literal
+        bookings: userBookings, // Keep only the user's bookings
+      };
+
+      return hotelWithUserBookings;
+    });
+
+    res.json({ success: true, myBookings });
+  } catch (error) {
+    console.log('Error in getMyBooking controller: ', error);
     res.status(500).json({ success: false, message: 'something went wrong' });
   }
 };

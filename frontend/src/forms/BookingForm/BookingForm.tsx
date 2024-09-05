@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { PiSpinnerBold } from "react-icons/pi";
 import { useMutation } from "react-query";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import * as apiClient from "../../api-client";
 import { useSearchContext } from "../../contexts/SearchContext";
@@ -18,6 +18,7 @@ const BookingForm = ({ currentUser, paymentIntent }: BookingFormProps) => {
   const { hotelId } = useParams();
   const stripe = useStripe();
   const elements = useElements();
+  const navigate = useNavigate();
 
   const { register, handleSubmit } = useForm<BookingFormData>({
     defaultValues: {
@@ -39,6 +40,8 @@ const BookingForm = ({ currentUser, paymentIntent }: BookingFormProps) => {
     {
       onSuccess: (data) => {
         toast.success(data.message);
+        search.saveSearchValues("", new Date(), new Date(), 1, 0);
+        navigate("/search");
       },
       onError: (error: Error) => {
         toast.error(error.message);

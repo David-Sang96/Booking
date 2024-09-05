@@ -4,6 +4,7 @@ import { param } from 'express-validator';
 import {
   confirmBooking,
   createPayment,
+  getMyBooking,
   hotelDetails,
   searchHotels,
 } from '../controller/hotels.controller';
@@ -13,6 +14,8 @@ import { validationResults } from '../ultis/validationResults';
 const router = express.Router();
 
 router.get('/search', searchHotels);
+
+router.get('/my-booking', verifyToken, getMyBooking);
 
 router.get(
   '/:hotelId',

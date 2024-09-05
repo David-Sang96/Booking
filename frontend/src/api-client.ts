@@ -268,3 +268,18 @@ export const createRoomBooking = async (formData: BookingFormData) => {
     }
   }
 };
+
+export const myHotelBookings = async (): Promise<HotelDataType[]> => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/hotels/my-booking`);
+    const data = response.data.myBookings;
+    return data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const message = error.response?.data.message || "An error occurred";
+      throw new Error(message);
+    } else {
+      throw new Error("An unexpected error occurred");
+    }
+  }
+};

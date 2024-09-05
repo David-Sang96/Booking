@@ -9,6 +9,7 @@ import AddHotel from "../pages/AddHotel";
 import Booking from "../pages/Booking";
 import Home from "../pages/Home";
 import HotelDetails from "../pages/HotelDetails";
+import MyBooking from "../pages/MyBooking";
 import MyHotels from "../pages/MyHotels";
 import Register from "../pages/Register";
 import Search from "../pages/Search";
@@ -72,6 +73,14 @@ const Routes = () => {
           path: "/hotel/:hotelId/booking",
           element: isLoggedIn ? (
             <Booking />
+          ) : (
+            <Navigate to={"/sign-in"} replace />
+          ),
+        },
+        {
+          path: "/hotel/my-bookings",
+          element: isLoggedIn ? (
+            <MyBooking />
           ) : (
             <Navigate to={"/sign-in"} replace />
           ),
