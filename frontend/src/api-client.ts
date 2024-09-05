@@ -90,6 +90,21 @@ export const logOut = async () => {
   }
 };
 
+export const getHotels = async (): Promise<HotelDataType[]> => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/hotels`);
+    const data = response.data.hotels;
+    return data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const message = error.response?.data.message || "An error occurred";
+      throw new Error(message);
+    } else {
+      throw new Error("An unexpected error occurred");
+    }
+  }
+};
+
 export const addMyHotel = async (hotelFormData: FormData) => {
   try {
     const response = await axios.post(

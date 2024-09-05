@@ -7,7 +7,7 @@ const Header = () => {
   const { isLoggedIn } = useAppContext();
 
   return (
-    <div className="bg-blue-800 py-6">
+    <div className="bg-blue-800 py-3">
       <div className="container mx-auto flex justify-between">
         <span className="text-3xl font-bold tracking-tight text-white">
           <Link to="/">FreshHolidays.com</Link>

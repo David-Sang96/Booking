@@ -14,6 +14,16 @@ import { constructSearchQuery } from '../ultis/constructSearchQuery';
 
 const stripe = new Stripe(ENV_VARS.STRIPE_SECRET_KEY as string);
 
+export const getAllHotels = async (req: Request, res: Response) => {
+  try {
+    const hotels = await Hotel.find().sort('-lastUpdated');
+    res.json({ success: true, hotels });
+  } catch (error) {
+    console.log('Error in getAllHotels controller: ', error);
+    res.status(500).json({ success: false, message: 'something went wrong' });
+  }
+};
+
 export const searchHotels = async (req: Request, res: Response) => {
   try {
     const query = constructSearchQuery(req.query);
