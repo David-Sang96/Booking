@@ -9,7 +9,14 @@ export type BookingFormProps = {
 };
 
 export type BookingFormData = {
+  hotelId: string;
   firstName: string;
   lastName: string;
   email: string;
+  adultCount: number;
+  childCount: number;
+  checkIn: string;
+  checkOut: string;
+  paymentIntentId: string;
+  totalCost: number;
 };

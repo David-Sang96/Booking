@@ -2,7 +2,7 @@ import express from 'express';
 import { param } from 'express-validator';
 
 import {
-  confirmPayment,
+  confirmBooking,
   createPayment,
   hotelDetails,
   searchHotels,
@@ -25,6 +25,6 @@ router.get(
 
 router.post('/:hotelId/bookings/payment-intent', verifyToken, createPayment);
 
-router.post('/:hotelId/bookings', verifyToken, confirmPayment);
+router.post('/:hotelId/bookings', verifyToken, confirmBooking);
 
 export default router;

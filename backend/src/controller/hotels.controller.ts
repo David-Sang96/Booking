@@ -91,7 +91,7 @@ export const createPayment = async (req: Request, res: Response) => {
 
     const totalCost = hotel.pricePerNight * numberOfNights;
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: totalCost,
+      amount: totalCost * 100,
       currency: 'gbp',
       metadata: {
         hotelId,
@@ -118,10 +118,10 @@ export const createPayment = async (req: Request, res: Response) => {
   }
 };
 
-export const confirmPayment = async (req: Request, res: Response) => {
+export const confirmBooking = async (req: Request, res: Response) => {
   try {
     const { hotelId } = req.params;
-    const { paymentIntentId } = req.body;
+    const { paymentIntentId } = req.body.formData;
 
     const paymentIntent = await stripe.paymentIntents.retrieve(
       paymentIntentId as string
@@ -149,7 +149,7 @@ export const confirmPayment = async (req: Request, res: Response) => {
     }
 
     const newBooking: BookingType = {
-      ...req.body,
+      ...req.body.formData,
       userId: req.userId,
     };
 
@@ -167,9 +167,9 @@ export const confirmPayment = async (req: Request, res: Response) => {
     }
     await hotel.save();
 
-    res.json({ success: true, message: 'payment success' });
+    res.json({ success: true, message: 'Booking saved' });
   } catch (error) {
-    console.log('Error in confirmPayment controller: ', error);
+    console.log('Error in confirmBooking controller: ', error);
     res.status(500).json({ success: false, message: 'something went wrong' });
   }
 };

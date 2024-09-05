@@ -1,32 +1,69 @@
+import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
+import { StripeCardElement } from "@stripe/stripe-js";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { PiSpinnerBold } from "react-icons/pi";
 import { useMutation } from "react-query";
+import { useParams } from "react-router-dom";
 
-import { CardElement } from "@stripe/react-stripe-js";
 import * as apiClient from "../../api-client";
+import { useSearchContext } from "../../contexts/SearchContext";
 import {
   BookingFormData,
   BookingFormProps,
 } from "../../types/bookingFormDataTypes";
 
 const BookingForm = ({ currentUser, paymentIntent }: BookingFormProps) => {
+  const search = useSearchContext();
+  const { hotelId } = useParams();
+  const stripe = useStripe();
+  const elements = useElements();
+
   const { register, handleSubmit } = useForm<BookingFormData>({
     defaultValues: {
       firstName: currentUser.firstName,
       lastName: currentUser.lastName,
       email: currentUser.email,
+      adultCount: search.adultCount,
+      childCount: search.childCount,
+      checkIn: search.checkIn.toISOString(),
+      checkOut: search.checkOut.toISOString(),
+      paymentIntentId: paymentIntent.paymentIntentId,
+      hotelId,
+      totalCost: paymentIntent.totalCost,
     },
   });
 
-  const { mutate } = useMutation(apiClient.getSearchHotels);
+  const { mutate: bookRoom, isLoading } = useMutation(
+    apiClient.createRoomBooking,
+    {
+      onSuccess: (data) => {
+        toast.success(data.message);
+      },
+      onError: (error: Error) => {
+        toast.error(error.message);
+      },
+    },
+  );
 
-  const onSubmit = handleSubmit((data) => {
-    console.log(data);
-  });
+  const onSubmit = async (formData: BookingFormData) => {
+    if (!stripe || !elements) return;
+
+    const result = await stripe.confirmCardPayment(paymentIntent.clientSecret, {
+      payment_method: {
+        card: elements.getElement(CardElement) as StripeCardElement,
+      },
+    });
+
+    if (result.paymentIntent?.status === "succeeded") {
+      bookRoom({ ...formData, paymentIntentId: result.paymentIntent.id });
+    }
+  };
 
   return (
     <form
       className="space-y-5 rounded-lg border border-slate-300 p-5 shadow"
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit(onSubmit)}
     >
       <span className="text-2xl font-bold">Confirm Your Details</span>
       <div className="grid grid-cols-2 gap-6">
@@ -76,6 +113,16 @@ const BookingForm = ({ currentUser, paymentIntent }: BookingFormProps) => {
           id="payment-element"
           className="rounded-md border p-2 text-sm"
         />
+      </div>
+      <div className="flex justify-end">
+        <button
+          type="submit"
+          disabled={isLoading}
+          className={`flex items-center gap-1 rounded border border-blue-800 bg-slate-50 px-3 py-2 text-sm duration-300 hover:bg-blue-800 hover:text-white md:text-base ${isLoading && "cursor-not-allowed"}`}
+        >
+          {isLoading && <PiSpinnerBold className="size-6 animate-spin" />}
+          <p>Confirm Booking</p>
+        </button>
       </div>
     </form>
   );

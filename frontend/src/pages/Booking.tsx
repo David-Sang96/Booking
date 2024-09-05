@@ -44,7 +44,6 @@ const Booking = () => {
       ),
     { enabled: !!hotelId && numberOfNights > 0 },
   );
-  console.log(paymentIntentData);
 
   if (!hotel) return <></>;
 

@@ -6,6 +6,7 @@ import {
   UserType,
 } from "./../../backend/src/shared/types";
 import { RegisterFormData, SignInFormData } from "./types/authTypes";
+import { BookingFormData } from "./types/bookingFormDataTypes";
 import { SearchParams } from "./types/searchContextTypes";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -250,14 +251,11 @@ export const createPaymentIntent = async (
   }
 };
 
-export const confirmPayment = async (
-  hotelId: string,
-  paymentData: PaymentIntentResponse,
-) => {
+export const createRoomBooking = async (formData: BookingFormData) => {
   try {
     const response = await axios.post(
-      `${API_BASE_URL}/hotels/${hotelId}/bookings`,
-      { paymentData },
+      `${API_BASE_URL}/hotels/${formData.hotelId}/bookings`,
+      { formData },
     );
     const data = response.data;
     return data;
